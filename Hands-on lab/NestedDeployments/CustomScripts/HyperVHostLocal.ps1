@@ -47,20 +47,29 @@ Configuration Main
 		
 			SetScript =
 			{
-$zipDownload = "https://deltadanscripts.blob.core.windows.net/scripts/OnPremLinuxVM.zip"
-$downloadedFile = "D:\OnPremLinuxVM.zip"
+#$zipDownload = "https://deltadanscripts.blob.core.windows.net/scripts/OnPremLinuxVM.zip"
+$zipDownload = "https://lnclinuximages.blob.core.windows.net/images/linux-dyn.vhd"
+#$downloadedFile = "D:\OnPremLinuxVM.zip"
+$downloadedFile = "D:\OnPremLinuxVM.vhd"
 $vmFolder = "C:\VM"
+$vhdpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks\OnPremLinuxVM.vhdx'
+$diskpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks'
+
+md $diskpath -ErrorAction Ignore
+
 Invoke-WebRequest $zipDownload -OutFile $downloadedFile
-Add-Type -assembly "system.io.compression.filesystem"
-[io.compression.zipfile]::ExtractToDirectory($downloadedFile, $vmFolder)
+move $downloadedFile $vhdpath
+
+#Add-Type -assembly "system.io.compression.filesystem"
+#[io.compression.zipfile]::ExtractToDirectory($downloadedFile, $vmFolder)
 $NatSwitch = Get-NetAdapter -Name "vEthernet (NAT Switch)"
 New-NetIPAddress -IPAddress 192.168.0.1 -PrefixLength 24 -InterfaceIndex $NatSwitch.ifIndex
 New-NetNat -Name NestedVMNATnetwork -InternalIPInterfaceAddressPrefix 192.168.0.0/24 -Verbose
 New-VM -Name OnPremVM `
 -MemoryStartupBytes 2GB `
 -BootDevice VHD `
--VHDPath 'C:\VM\OnPremLinuxVM\Virtual Hard Disks\OnPremLinuxVM.vhdx' `
--Path 'C:\VM\OnPremLinuxVM\Virtual Hard Disks' `
+-VHDPath $vhdpath `
+-Path $diskpath `
 -Generation 1 `
 -Switch "NAT Switch"
 Start-VM -Name OnPremVM
