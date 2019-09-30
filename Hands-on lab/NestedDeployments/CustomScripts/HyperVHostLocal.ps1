@@ -52,8 +52,8 @@ $zipDownload = "https://lnclinuximages.blob.core.windows.net/images/OnPremLinuxV
 $downloadedFile = "D:\OnPremLinuxVM.zip"
 #$downloadedFile = "D:\OnPremLinuxVM.vhd"
 $vmFolder = "C:\VM"
-$vhdpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks\OnPremLinuxVM.vhd'
-$diskpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks'
+$vhdpath = 'C:\VM\OnPremLinuxVM\OnPremLinuxVM\Virtual Hard Disks\OnPremLinuxVM.vhdx'
+$diskpath = 'C:\VM\OnPremLinuxVM\OnPremLinuxVM\Virtual Hard Disks'
 
 #md $diskpath -ErrorAction Ignore
 
