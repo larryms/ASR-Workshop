@@ -50,20 +50,21 @@ Configuration Main
 		
 			SetScript =
 			{
-#				$zipDownload = "https://www.dropbox.com/s/0znu8ssjie4rbpl/OnPremLinuxVM.zip?dl=1"
-				$zipDownload = "https://lnclinuximages.blob.core.windows.net/images/linux-dyn.vhd"
-				$downloadedFile = "D:\OnPremLinuxVM.vhd"
-				$vmFolder = "C:\VM"
-				$vhdpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks\OnPremLinuxVM.vhdx'
-				$diskpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks'
-				
-				md $diskpath -ErrorAction Ignore
+			#$zipDownload = "https://www.dropbox.com/s/0znu8ssjie4rbpl/OnPremLinuxVM.zip?dl=1"
+			$zipDownload = "https://lnclinuximages.blob.core.windows.net/images/OnPremLinuxVM.zip"
+			$downloadedFile = "D:\OnPremLinuxVM.zip"
+			#$downloadedFile = "D:\OnPremLinuxVM.vhd"
+			$vmFolder = "C:\VM"
+			$vhdpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks\OnPremLinuxVM.vhd'
+			$diskpath = 'C:\VM\OnPremLinuxVM\Virtual Hard Disks'
 
-				Invoke-WebRequest $zipDownload -OutFile $downloadedFile
-				move $downloadedFile $vhdpath
-				
-				# Add-Type -assembly "system.io.compression.filesystem"
-				# [io.compression.zipfile]::ExtractToDirectory($downloadedFile, $vmFolder)
+			#md $diskpath -ErrorAction Ignore
+
+			Invoke-WebRequest $zipDownload -OutFile $downloadedFile
+			#move $downloadedFile $vhdpath
+
+			Add-Type -assembly "system.io.compression.filesystem"
+			[io.compression.zipfile]::ExtractToDirectory($downloadedFile, $vmFolder)
 				
 				
 				$NatSwitch = Get-NetAdapter -Name "vEthernet (NAT Switch)"
