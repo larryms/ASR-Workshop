@@ -47,6 +47,7 @@ Microsoft and the trademarks listed at https://www.microsoft.com/en-us/legal/int
     - [Task 1: Failover Azure IaaS region to region](#task-1-failover-azure-iaas-region-to-region)
     - [Task 2: Failover the on-premises VM to Azure IaaS](#task-2-failover-the-on-premises-vm-to-azure-iaas)
     - [Task 4: Failback Azure IaaS region to region](#task-4-failback-azure-iaas-region-to-region)
+    - [Failback On-Prem VM](#failback-on-prem-vm)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Disable replication in the recovery services vault](#task-1-disable-replication-in-the-recovery-services-vault)
     - [Task 2: Delete all BCDR resource groups](#task-2-delete-all-bcdr-resource-groups)
@@ -105,7 +106,7 @@ In this exercise, you will use Azure ARM templates to deploy the following envir
 
 ### Task 1: Deploy Azure IaaS
 
-1.  From **LABVM**, open Internet Explorer and connect to the Azure portal at: <https://portal.azure.com>.
+1.  From **LABVM** (or your laptop), open Internet Explorer and connect to the Azure portal at: <https://portal.azure.com>.
 
 2.  Select **+Create a resource** and then search for **Template Deployment**.
 
@@ -192,7 +193,7 @@ In this exercise, you will create and configure the services that will make it p
 
 ### Task 1: Create Azure recovery services vault
 
-1.  Using **LABVM**, connect to the Azure portal using your web browser at <https://portal.azure.com>.
+1.  Using **LABVM** (or your laptop), connect to the Azure portal using your web browser at <https://portal.azure.com>.
 
 2.  Select **+Create a resource**, then enter **Backup and Site Recovery**, and select **Create**.
 
@@ -258,7 +259,7 @@ In this exercise, you will create and configure the services that will make it p
 
     ![In the Import blade, the checkbox is selected for I agree to update all of the Azure modules.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image49.png "Import blade")
 
-9.  It will take a few minutes to update the modules. Select **Modules** under Shared Resources, and you can wait the import has completed.
+9.  It will take a few minutes to update the modules. Select **Modules** under Shared Resources, and you can watch until the import has completed.
 
     ![In the Automation Account blade, under Shared Resources, Modules is selected. Under Add a module, Azure modules are being updated is selected.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image50.png "Automation Account blade")
 
@@ -332,7 +333,7 @@ In this exercise, you will create and configure the services that will make it p
 
     ![Two runbooks have authoring status as published: ASRSQLFailover, and ASRWEBFailover.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image70.png "Runbooks")
 
-32. From **LABVM**, select **Start** and select **PowerShell ISE** (make sure to right-click and Run as Administrator).
+32. From **LABVM**, select **Start** and select **PowerShell ISE** (make sure to right-click and Run as Administrator).  *(Note: For the following steps , you could alternatively use the Azure Cloud Shell running Powershell.  It's up to you)*
 
     ![Screenshot of the Windows PowerShell ISE button.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image71.png "Windows PowerShell ISE button")
 
@@ -551,30 +552,10 @@ In this task, the **OnPremVM** will be configured to replicate to Azure and be r
 39. Open Internet Explorer on **HYPERVHOST** and browse to the following URL of the **OnPremVM**. This is very simple PHP application running on the **OnPremVM** connected to the MySQL Server that is running locally on the VM. This is to simulate an application is that running on one VM in the on-premises data center.
 
     ```
-    http://192.168.0.10/bcdr.php
+    http://192.168.0.10:8080
     ```
 
-    ![In Hyper-V Manager, in the tree view, HyperVHost is selected. Under Virtual Machines, OnPremVM is selected.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image109.png "Hyper-V Manager")
-
-40. From the command prompt of the OnPremVM update the OS with the latest patches by using the following command. You will need to enter the password again.
-
-    ```
-    sudo apt-get update -y
-    ```
-
-    ![In the OnPremVM virtual machine console, the previous command is called out.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image110.png "OnPremVM virtual machine console")
-
-41. After the updates complete, install the Azure Guest Agent for Linux on the VM using the following commands:
-
-    ```
-    sudo apt-get install walinuxagent -y
-    ```
-
-    ![In the OnPremVM virtual machine console, the previous command displays.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image111.png "OnPremVM virtual machine console")
-
->**Note**: You may see some errors and warnings including some related to "cloud-init" and new updates being available. This is normal behavior since this VM thinks it should be in Azure. This may take 5-10 minutes.
-
-42. Once you're returned to the command prompt, type **exit** into the terminal and hit **Enter** to log out of **OnPremVM**.
+You will see a simple voting app.  Click on a button to vote!
 
 43. Sign out of **HYPERVHOST** and return to the Azure portal running on your **LABVM**.
 
@@ -1602,6 +1583,16 @@ Now, that your applications have been made ready for high-availability and BCDR 
     ![The Availability group dashboard displays, with SQLVM3 and its properties called out.](images/Hands-onlabstep-bystep-Businesscontinuityanddisasterrecoveryimages/media/image403.png "Availability group dashboard")
 
 >**Note:** This task could have been done using the Azure Automation script during Failback, but more DBAs would prefer a good, clean failback and then do this manually once they are comfortable with the failback.
+
+
+### Failback On-Prem VM
+
+After failover from on-prem to Azure, replicated virtual machines aren't protected by Site Recovery, and the Azure location is now acting as the active location. To fail back VMs in a recovery plan, run a planned failover from the secondary site to the primary, as follows.
+
+1.  Within the BCDRRSV Recovery vault, Select Replicated Items > OnPremVM.  From the table, click 'Commit' and say 'OK'.  This will take a short time to complete.
+2.  From the same screen, select 'Planned Failover'. Select 'Full Download' and check 'Create the Virtual Machine'.  Press 'OK'. 
+3.  This will take a few minutes to run as it replicates the VM back from Azure to the HyperV server.  While you are waiting, if you are interested, see [Why is there no button called failback?](https://docs.microsoft.com/en-us/azure/site-recovery/hyper-v-azure-failback#why-is-there-no-button-called-failback) for more information about the 'planned failover' button.
+4. Once this completes, you can RDP again into the RDP server and test that your application is running.
 
 ## After the hands-on lab
 

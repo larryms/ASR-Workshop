@@ -25,12 +25,13 @@ The names of manufacturers, products, or URLs are provided for informational pur
 <!-- TOC -->
 
 - [Business continuity and disaster recovery before the hands-on lab setup guide](#business-continuity-and-disaster-recovery-before-the-hands-on-lab-setup-guide)
-    - [Requirements](#requirements)
-    - [Before the hands-on lab](#before-the-hands-on-lab)
-        - [Task 1: Create a virtual machine to execute the lab](#task-1-create-a-virtual-machine-to-execute-the-lab)
-        - [Task 2: Download hands-on support files to LABVM](#task-2-download-hands-on-support-files-to-labvm)
-        - [Task 3: Install SQL Server Express on LABVM](#task-3-install-sql-server-express-on-labvm)
-        - [Task 4: Create Azure Resource Groups](#task-4-create-the-resource-groups)
+  - [Requirements](#requirements)
+  - [Before the hands-on lab](#before-the-hands-on-lab)
+    - [Task 1: Determine where you will run the lab exercises.](#task-1-determine-where-you-will-run-the-lab-exercises)
+    - [Task 2: Create a virtual machine to execute the lab](#task-2-create-a-virtual-machine-to-execute-the-lab)
+    - [Task 2: Install Azure PowerShell 'Az' commands](#task-2-install-azure-powershell-az-commands)
+    - [Task 3: Download hands-on support files to LABVM](#task-3-download-hands-on-support-files-to-labvm)
+    - [Task 3: Create Azure Resource Groups](#task-3-create-azure-resource-groups)
 
 <!-- /TOC -->
 
@@ -46,7 +47,29 @@ The names of manufacturers, products, or URLs are provided for informational pur
 
 Duration: 20 minutes
 
-### Task 1: Create a virtual machine to execute the lab
+
+### Task 1:  Determine where you will run the lab exercises.
+
+You will need a workstation with the following:
+
+- Azure Powershell
+- Azure CLI
+- RDP
+- SSH
+- Visual Studio Code (optional)
+
+If you choose to use your personal workstation, 
+
+1. Download the zipped Hands-on Lab Step by Step student files at the following link: [Student Files](https://github.com/larryms/ASR-Workshop/blob/master/Hands-on%20lab/StudentFiles/StudentFiles.zip?raw=true).
+
+2.  Extract the files to a directory here **C:\\HOL** on LABVM.
+
+Alternatively, if you do not have a laptop with these pre-reqs, proceed with the  task1 to create a lab vm.
+
+
+### Task 2: Create a virtual machine to execute the lab
+
+**Only do these steps if you are creating a LABVM.  If not, proceed to task 3.**
 
 1.  Launch a browser and navigate to the Azure Global portal at <https://portal.azure.com>. Once prompted, login with your Microsoft Azure credentials. If prompted, choose whether your account is an Organization  or Microsoft account.
 
@@ -157,47 +180,28 @@ Duration: 20 minutes
 
 2.  Extract the files to a directory here **C:\\HOL** on LABVM.
 
-### Task 4: Install SQL Server Express on LABVM
 
-1.  From within LABVM, open Internet Explorer and browse to the following URL:
 
-    <https://www.microsoft.com/en-US/sql-server/sql-server-downloads>
-
-2.  Click **Download now** under the Express edition of SQL.
-
-    ![On the Download SQL Server 2017 for Windows webpage, Express edition is selected for download.](images/Setup/image17.png "Download SQL Server 2017 for Windows webpage")
-
-3.  Click **Run** when prompted after downloading.
-
-    ![Next to the message asking if you want to run or save SQLServer 2017, Run is selected.](images/Setup/image18.png "Run button")
-
-4.  When the installer starts, click **Basic**.
-
-    ![Basic is selected in the SQL Server 2017 Express Edition Installer wizard.](images/Setup/image19.png "SQL Server 2017 Express Edition Installer")
-
-5.  Accept the other defaults in the install wizard until SQL starts to install. This may take 5-10 minutes to complete.
-
-6.  Once the install completes, click the **Install SSMS** button. This will take you to a webpage where you can download and install SQL Server Management Studio (SSMS).
-
-    ![On the SQL Server 2017 Express Edition Installation Complete page, the Install SSMS button is selected.](images/Setup/image20.png "SQL Server 2017 Express Edition Installation Complete page")
-
-7.  Click the **Download SQL Server Management Studio** link. When prompted, click **Run**.
-
-    ![On the Download SSMS page, the link to Download SQL Server Management Studio is selected.](images/Setup/image21.png "Download SSMS page")
-
-8.  Click **Install** when prompted to begin installing SSMS. This may take 5-10 minutes to complete.
-
-    ![On the Install Microsoft SQL Server Management Studio Welcome page, the Install button is selected.](images/Setup/image22.png "Microsoft SQL Server Management Studio Welcome page")
-
-9.  Click **Close** when the installation of SMSS is complete.
-
-10. Click **Close** on the SQL Express Edition setup wizard.
-
-### Task 5: Create Azure Resource Groups
+### Task 3: Create Azure Resource Groups
 
 In this task, you will select **Primary** and **Secondary** Azure regions that will be used for the remainder of the BCDR HOL. The **Primary** region should be able to **support V3 virtual machine** sizes, and then you should select the **Secondary** region based on the region pair assigned by Microsoft. Use the Products available by region webpage to determine your **Primary** site: <https://azure.microsoft.com/en-us/regions/services/>. Once you have selected the Primary site,  review the BCDR page to find your Primary Site's Region Pair: <https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions>.
 
 >**Note:** The examples in this HOL Guide use the following regions: **Primary:** East US 2 and **Secondary**: Central US. For this lab be sure to use these regions as they are validated to work with all the Azure features / services used throughout this lab.
+
+
+Creating the resource groups through the Azure portal can be tedious.  As a shortcut, you may use the following cli commands to quickly create them:  (Tip:  use the Azure cloud shell to run these commands)
+
+```
+az group create --name BCDRLabRG --location CentralUS
+
+az group create --name BCDRIaaSPrimarySite --location EastUS2
+az group create --name BCDRIaaSSecondarySite --location CentralUS
+az group create --name BCDRAzureAutomation --location EastUS
+az group create --name BCDRAzureSiteRecovery --location CentralUS
+az group create --name BCDROnPremPrimarySite --location EastUS2
+```
+
+Alternatively, if you'd like to go through the steps in the Azure portal, run through the following tasks:
 
 1.  From the **LABVM**, open Internet Explorer and connect to the Azure portal at: <https://portal.azure.com>.
 
